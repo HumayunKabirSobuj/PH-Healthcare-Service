@@ -4,25 +4,6 @@ const prisma = new PrismaClient();
 const getAllFromDB = async (params: any) => {
   const { searchTearm, ...filterData } = params;
 
-  // console.log(filterData);
-
-  //   console.log({ params });
-
-  // [
-  //   {
-  //     name: {
-  //       contains: params.searchTearm,
-  //       mode: "insensitive",
-  //     },
-  //   },
-  //   {
-  //     email: {
-  //       contains: params.searchTearm,
-  //       mode: "insensitive",
-  //     },
-  //   },
-  // ],
-
   const andConditions: Prisma.AdminWhereInput[] = [];
   const adminSearchAbleFields = ["name", "email"];
   if (params.searchTearm) {
@@ -47,7 +28,7 @@ const getAllFromDB = async (params: any) => {
     });
   }
 
-  console.dir(andConditions, { depth: "infinity" });
+  // console.dir(andConditions, { depth: "infinity" });
 
   const whereConditions: Prisma.AdminWhereInput = { AND: andConditions };
 
