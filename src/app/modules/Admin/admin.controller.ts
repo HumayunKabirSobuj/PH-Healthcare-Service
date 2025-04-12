@@ -10,10 +10,9 @@ const getAllFromDB = async (req: Request, res: Response) => {
 
     // Pagination options
 
-    const options = pick(req.query, ["page","limit"]);
+    const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
 
     // console.log('options', options);
-
 
     const result = await AdminService.getAllFromDB(filters, options);
     res.status(200).json({

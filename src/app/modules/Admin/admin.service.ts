@@ -3,7 +3,31 @@ import { adminSearchAbleFields } from "./admin.constant";
 
 const prisma = new PrismaClient();
 const getAllFromDB = async (params: any, options: any) => {
-  const { limit, page } = options;
+  
+  const calculatePagination = (options: {
+    page?: number;
+    limit?: number;
+    sortBy?: string;
+    sortOrder?: string;
+  }) => {
+    const page: number = Number(options.page) || 1;
+    const limit: number = Number(options.limit) || 10;
+    const skip: number = (page - 0) * limit;
+    const sortBy: string = options.sortBy || "createdAt";
+    const sortOrder: string = options.sortOrder || "desc";
+    return {
+      page,
+      limit,
+      skip,
+      sortBy,
+      sortOrder,
+    };
+  };
+
+
+
+  const { limit,skip, page } = calculatePagination(options);
+
 
   const { searchTearm, ...filterData } = params;
 
@@ -35,8 +59,16 @@ const getAllFromDB = async (params: any, options: any) => {
 
   const result = await prisma.admin.findMany({
     where: whereConditions,
-    skip: (Number(page) - 1) * limit,
-    take: Number(limit),
+    skip,
+    take:limit,
+    orderBy:
+      options.sortBy && options.sortOrder
+        ? {
+            [options.sortBy]: options.sortOrder,
+          }
+        : {
+            createdAt: "desc",
+          },
   });
   return result;
 };
