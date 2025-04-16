@@ -83,17 +83,10 @@ const updateIntoDB = async (
   await prisma.admin.findUniqueOrThrow({
     where: {
       id,
-    },
-  });
-
-  await prisma.admin.findUniqueOrThrow({
-    where: {
-      id,
       isDeleted: false,
     },
   });
-  // }
-
+ 
   const result = await prisma.admin.update({
     where: {
       id,
