@@ -102,7 +102,7 @@ const deleteFromDB = async (id: string): Promise<Admin | null> => {
       id,
     },
   });
-
+  
   const result = await prisma.$transaction(async (transactionClient) => {
     const adminDeletedData = await transactionClient.admin.delete({
       where: {
