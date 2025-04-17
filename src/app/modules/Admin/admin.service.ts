@@ -86,7 +86,6 @@ const updateIntoDB = async (
       isDeleted: false,
     },
   });
- 
   const result = await prisma.admin.update({
     where: {
       id,
