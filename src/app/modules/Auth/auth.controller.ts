@@ -6,14 +6,21 @@ import status from "http-status";
 
 const loginUser = catchAsync(async (req: Request, res: Response) => {
   const result = await AuthServices.loginUser(req.body);
+  const { refreshToken, ...others } = result;
+
+  res.cookie("refreshToken", refreshToken, {
+    secure: false,
+    httpOnly:true
+  });
+
   sendResponse(res, {
     statusCode: status.OK,
     success: true,
     message: "Logged in successfully..",
-    data: result,
+    data: others,
   });
 });
 
-export const AuthController ={
-    loginUser
-}
+export const AuthController = {
+  loginUser,
+};
