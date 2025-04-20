@@ -2,8 +2,14 @@ import { Admin, Prisma, UserStatus } from "@prisma/client";
 import { adminSearchAbleFields } from "./admin.constant";
 import { paginationHelper } from "../../../helpars/paginationHelper";
 import prisma from "../../../shared/prisma";
+import { IAdminFilterRequest } from "./admin.interface";
+import { IPaginationOptions } from "../../interfaces/pagination";
 
-const getAllFromDB = async (params: any, options: any) => {
+const getAllFromDB = async (
+  params: IAdminFilterRequest,
+  options: IPaginationOptions
+) => {
+  console.log(options);
   const { limit, skip, page } = paginationHelper.calculatePagination(options);
 
   const { searchTearm, ...filterData } = params;
@@ -20,12 +26,11 @@ const getAllFromDB = async (params: any, options: any) => {
     });
   }
 
-  
   if (Object.keys(filterData).length > 0) {
     andConditions.push({
       AND: Object.keys(filterData).map((key) => ({
         [key]: {
-          equals: filterData[key],
+          equals: (filterData as any)[key],
         },
       })),
     });
@@ -102,7 +107,7 @@ const deleteFromDB = async (id: string): Promise<Admin | null> => {
       id,
     },
   });
-  
+
   const result = await prisma.$transaction(async (transactionClient) => {
     const adminDeletedData = await transactionClient.admin.delete({
       where: {
