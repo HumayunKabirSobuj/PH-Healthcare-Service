@@ -3,8 +3,6 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { jwtHelpers } from "../../../helpars/jwtHelpers";
 
-
-
 const loginUser = async (payload: { email: string; password: string }) => {
   const userData = await prisma.user.findUnique({
     where: {
@@ -51,6 +49,11 @@ const loginUser = async (payload: { email: string; password: string }) => {
   };
 };
 
+const refreshToken = async (token: string) => {
+  console.log("refresh Token ..... :", token);
+};
+
 export const AuthServices = {
   loginUser,
+  refreshToken,
 };
