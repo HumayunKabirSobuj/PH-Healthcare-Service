@@ -71,7 +71,6 @@ const refreshToken = async (token: string) => {
     throw new Error("User not found.");
   }
 
-  // console.log(isUserExist);
 
   const accessToken = jwtHelpers.generateToken(
     {
