@@ -1,14 +1,15 @@
-import { UserStatus } from '@prisma/client';
+import { UserStatus } from "@prisma/client";
 import prisma from "../../../shared/prisma";
 import bcrypt from "bcrypt";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import { Secret } from "jsonwebtoken";
 import { jwtHelpers } from "../../../helpars/jwtHelpers";
+import config from "../../../config";
 
 const loginUser = async (payload: { email: string; password: string }) => {
   const userData = await prisma.user.findUnique({
     where: {
       email: payload.email,
-      status:UserStatus.ACTIVE
+      status: UserStatus.ACTIVE,
     },
   });
   // console.log(userData);
@@ -16,7 +17,6 @@ const loginUser = async (payload: { email: string; password: string }) => {
     throw new Error("User not found..");
   }
 
-  
   const isCorrectPassword: boolean = await bcrypt.compare(
     payload.password,
     userData.passsword
@@ -32,8 +32,8 @@ const loginUser = async (payload: { email: string; password: string }) => {
       email: userData.email,
       role: userData.role,
     },
-    "abcdef",
-    "5m"
+    config.jwt.jwt_secret as Secret,
+    config.jwt.expires_in as string
   );
 
   const refreshToken = jwtHelpers.generateToken(
@@ -41,8 +41,8 @@ const loginUser = async (payload: { email: string; password: string }) => {
       email: userData.email,
       role: userData.role,
     },
-    "abcdefghij",
-    "30d"
+    config.jwt.refresh_token_secret as Secret,
+    config.jwt.refresh_token_expires_in as string
   );
 
   return {
@@ -64,7 +64,7 @@ const refreshToken = async (token: string) => {
   const userData = await prisma.user.findUnique({
     where: {
       email: decodedData.email,
-      status:UserStatus.ACTIVE
+      status: UserStatus.ACTIVE,
     },
   });
 
@@ -72,14 +72,13 @@ const refreshToken = async (token: string) => {
     throw new Error("User not found.");
   }
 
-
   const accessToken = jwtHelpers.generateToken(
     {
       email: userData.email,
       role: userData.role,
     },
-    "abcdef",
-    "5m"
+    config.jwt.jwt_secret as Secret,
+    config.jwt.expires_in as string
   );
 
   return {
