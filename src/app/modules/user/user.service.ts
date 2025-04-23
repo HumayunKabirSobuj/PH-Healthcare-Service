@@ -14,7 +14,6 @@ const createAdmin = async (data: any) => {
 
   const adminData = data.admin;
 
-  
   const result = await prisma.$transaction(async (tx) => {
     await tx.user.create({
       data: userData,
@@ -28,6 +27,7 @@ const createAdmin = async (data: any) => {
 
   return result;
 };
+
 
 export const userService = {
   createAdmin,

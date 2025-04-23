@@ -4,6 +4,8 @@ import bcrypt from "bcrypt";
 import { Secret } from "jsonwebtoken";
 import { jwtHelpers } from "../../../helpars/jwtHelpers";
 import config from "../../../config";
+import ApiError from "../../errors/ApiError";
+import status from "http-status";
 
 const loginUser = async (payload: { email: string; password: string }) => {
   const userData = await prisma.user.findUnique({
@@ -55,7 +57,10 @@ const loginUser = async (payload: { email: string; password: string }) => {
 const refreshToken = async (token: string) => {
   let decodedData;
   try {
-    decodedData = jwtHelpers.verifyToken(token, config.jwt.refresh_token_secret as Secret);
+    decodedData = jwtHelpers.verifyToken(
+      token,
+      config.jwt.refresh_token_secret as Secret
+    );
   } catch (err) {
     throw new Error("You are not authorized");
   }
@@ -87,7 +92,53 @@ const refreshToken = async (token: string) => {
   };
 };
 
+const changePassword = async (user: any, payload: any) => {
+  const userData = await prisma.user.findUnique({
+    where: {
+      email: user.email,
+      status: UserStatus.ACTIVE,
+    },
+  });
+
+  // console.log(userData);
+
+  if (!userData) {
+    throw new ApiError(status.NOT_FOUND, "User not found.");
+  }
+
+  const isCorrectPassword: boolean = await bcrypt.compare(
+    payload.oldPassword,
+    userData.passsword
+  );
+
+  // console.log(isCorrectPassword);
+  if (!isCorrectPassword) {
+    throw new Error("Password Incorrect...");
+  }
+
+  // console.log(isCorrectPassword);
+
+  const hashPassword = await bcrypt.hash(payload.newPassword, 12);
+
+  // console.log(hashPassword);
+
+  await prisma.user.update({
+    where: {
+      email: userData.email,
+    },
+    data: {
+      passsword: hashPassword,
+      needPasswordChange: false,
+    },
+  });
+
+  return {
+    message: "password change successfully!",
+  };
+};
+
 export const AuthServices = {
   loginUser,
   refreshToken,
+  changePassword,
 };
