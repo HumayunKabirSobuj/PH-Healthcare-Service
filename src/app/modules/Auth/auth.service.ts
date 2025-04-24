@@ -6,6 +6,7 @@ import { jwtHelpers } from "../../../helpars/jwtHelpers";
 import config from "../../../config";
 import ApiError from "../../errors/ApiError";
 import status from "http-status";
+import emailSender from "./emailSender";
 
 const loginUser = async (payload: { email: string; password: string }) => {
   const userData = await prisma.user.findUnique({
@@ -161,7 +162,34 @@ const forgotPassword = async (payload: { email: string }) => {
     config.jwt.reset_pass_token_expires_in as string
   );
 
-  console.log(resetPassToken);
+  // console.log(resetPassToken);
+
+  // http://localhost:3000/reset-pass?email=humayun@gmail.com&token=fdklsjfdshfkdsjf
+
+  const resetPassLink =
+    config.reset_pass_link + `?userId=${userData.id}&token=${resetPassToken}`;
+
+  // console.log(resetPassLink);
+
+  await emailSender(
+    userData.email,
+
+    `<div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 12px; font-family: Arial, sans-serif; color: #333; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+  <h2 style="color: #4f46e5; font-size: 22px; margin-bottom: 20px;">Reset Your Password</h2>
+  <p style="font-size: 16px; margin-bottom: 10px;">Dear User,</p>
+  <p style="font-size: 16px; margin-bottom: 20px;">
+    You have requested to reset your password. Please click the button below to proceed:
+  </p>
+  <a href=${resetPassLink} style="text-decoration: none; display: inline-block;">
+    <button style="background-color: #4f46e5; color: #fff; padding: 12px 24px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer;">
+      Reset Password
+    </button>
+  </a>
+  <p style="font-size: 14px; margin-top: 30px; color: #666;">
+    If you did not request a password reset, you can safely ignore this email.
+  </p>
+</div>`
+  );
 };
 
 export const AuthServices = {

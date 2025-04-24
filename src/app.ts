@@ -26,6 +26,11 @@ app.use("/api/v1", router);
 //   });
 // });
 
+app.get("/", (req: Request, res: Response) => {
+  res.send("Server is running");
+});
+
+
 app.use(globalErrorHandler);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -39,8 +44,5 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   });
 });
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Server is running");
-});
 
 export default app;
