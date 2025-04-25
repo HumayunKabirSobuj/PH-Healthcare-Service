@@ -188,8 +188,49 @@ const forgotPassword = async (payload: { email: string }) => {
   <p style="font-size: 14px; margin-top: 30px; color: #666;">
     If you did not request a password reset, you can safely ignore this email.
   </p>
-</div>`
+    </div>`
   );
+};
+
+const resetPassword = async (
+  token: string,
+  payload: { id: string; password: string }
+) => {
+  // console.log({ token, payload });
+
+  const userData = await prisma.user.findUnique({
+    where: {
+      id: payload.id,
+      status: UserStatus.ACTIVE,
+    },
+  });
+
+  // console.log(userData);
+
+  if (!userData) {
+    throw new ApiError(status.NOT_FOUND, "User Not Found.");
+  }
+
+  const isValidToken = jwtHelpers.verifyToken(
+    token,
+    config.jwt.reset_pass_secret as Secret
+  );
+  console.log(isValidToken);
+
+  if (!(isValidToken.email === userData.email)) {
+    throw new ApiError(status.FORBIDDEN, "Forbidden");
+  }
+
+  const hashPassword = await bcrypt.hash(payload.password, 12);
+
+  await prisma.user.update({
+    where: {
+      id: userData.id,
+    },
+    data: {
+      passsword: hashPassword,
+    },
+  });
 };
 
 export const AuthServices = {
@@ -197,4 +238,5 @@ export const AuthServices = {
   refreshToken,
   changePassword,
   forgotPassword,
+  resetPassword,
 };
