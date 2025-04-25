@@ -2,30 +2,35 @@ import { PrismaClient, UserRole } from "@prisma/client";
 import bcrypt from "bcrypt";
 import prisma from "../../../shared/prisma";
 
-const createAdmin = async (data: any) => {
+const createAdmin = async (req:any) => {
+
+
+  console.log("File : ",req.file);
+  console.log("Data : ",req.body.data);
+
   //   console.log(data);
-  const hashPassword = await bcrypt.hash(data.password, 12);
+  // const hashPassword = await bcrypt.hash(data.password, 12);
 
-  const userData = {
-    email: data.admin.email,
-    role: UserRole.ADMIN,
-    passsword: hashPassword,
-  };
+  // const userData = {
+  //   email: data.admin.email,
+  //   role: UserRole.ADMIN,
+  //   passsword: hashPassword,
+  // };
 
-  const adminData = data.admin;
+  // const adminData = data.admin;
 
-  const result = await prisma.$transaction(async (tx) => {
-    await tx.user.create({
-      data: userData,
-    });
-    const createAdminData = await tx.admin.create({
-      data: adminData,
-    });
+  // const result = await prisma.$transaction(async (tx) => {
+  //   await tx.user.create({
+  //     data: userData,
+  //   });
+  //   const createAdminData = await tx.admin.create({
+  //     data: adminData,
+  //   });
 
-    return createAdminData;
-  });
+  //   return createAdminData;
+  // });
 
-  return result;
+  // return result;
 };
 
 
