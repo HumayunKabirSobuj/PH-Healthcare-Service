@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import { userController } from "./user.controller";
 import { UserRole } from "@prisma/client";
 import auth from "../../middlewares/auth";
@@ -12,6 +12,7 @@ router.post(
   "/",
   auth(UserRole.ADMIN, UserRole.SUPER_ADMIN),
   fileUplader.upload.single("file"),
+  // (req:Request, res:Response)
   userController.createAdmin
 );
 

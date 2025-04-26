@@ -23,20 +23,27 @@ const upload = multer({ storage: storage });
 // Configuration
 // const filePath = path.resolve(__dirname, "../../../../uploads/code-snapshot.png");
 
-const uploadToCloudinary = async (file:any) => {
-  // Upload an image
-  const uploadResult = await cloudinary.uploader
-    .upload("e:/Mission-7/Module-60/uploads/code-snapshot.png", {
-      public_id: "shoes",
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+const uploadToCloudinary = async (file: any) => {
+  // console.log("cloudinary",file);
 
-  console.log(uploadResult);
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader.upload(
+      file.path,
+      {
+        public_id: file.originalname,
+      },
+      (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result);
+        }
+      }
+    );
+  });
 };
 
 export const fileUplader = {
   upload,
-  uploadToCloudinary
+  uploadToCloudinary,
 };
