@@ -32,8 +32,6 @@ const createAdmin = async (req:any) => {
 
   // return result;
 };
-
-
 export const userService = {
   createAdmin,
 };
