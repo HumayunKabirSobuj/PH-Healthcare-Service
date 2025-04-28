@@ -12,7 +12,7 @@ router.post(
   auth(UserRole.ADMIN, UserRole.SUPER_ADMIN),
   fileUplader.upload.single("file"),
   (req: Request, res: Response, next: NextFunction) => {
-    req.body = userValidation.createAdmin.parse(JSON.parse(req.body.data))
+    req.body = userValidation.createAdmin.parse(JSON.parse(req.body.data));
     return userController.createAdmin(req, res, next);
   }
 );
@@ -21,8 +21,17 @@ router.post(
   auth(UserRole.ADMIN, UserRole.SUPER_ADMIN),
   fileUplader.upload.single("file"),
   (req: Request, res: Response, next: NextFunction) => {
-    req.body = userValidation.createAdmin.parse(JSON.parse(req.body.data))
-    return userController.createAdmin(req, res, next);
+    req.body = userValidation.createDoctor.parse(JSON.parse(req.body.data));
+    return userController.createDoctor(req, res, next);
+  }
+);
+router.post(
+  "/create-patient",
+  auth(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  fileUplader.upload.single("file"),
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = userValidation.createPatient.parse(JSON.parse(req.body.data));
+    return userController.createPatient(req, res, next);
   }
 );
 
