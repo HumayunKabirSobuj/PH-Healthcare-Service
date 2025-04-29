@@ -224,8 +224,9 @@ const changeProfileStatus = async (
   });
 
   if (!userData) {
-    throw new Error("User Not Found.");
+    throw new ApiError(status.NOT_FOUND, "User Not Found.");
   }
+
   const updateUserStatus = await prisma.user.update({
     where: {
       id,
@@ -241,5 +242,5 @@ export const userService = {
   createDoctor,
   createPatient,
   getAllFromDB,
-  changeProfileStatus
+  changeProfileStatus,
 };
