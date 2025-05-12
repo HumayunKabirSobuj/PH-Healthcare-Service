@@ -14,6 +14,12 @@ router.get(
   userController.getAllFromDB
 );
 
+router.get(
+  "/me",
+  auth(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.DOCTOR, UserRole.PATIENT),
+  userController.getMyProfile
+);
+
 router.post(
   "/create-admin",
   auth(UserRole.ADMIN, UserRole.SUPER_ADMIN),
@@ -42,10 +48,10 @@ router.post(
 );
 
 router.patch(
-  '/:id/status',
+  "/:id/status",
   auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
   // validateRequest(userValidation.updateStatus),
   userController.changeProfileStatus
-)
+);
 
 export const userRoutes = router;

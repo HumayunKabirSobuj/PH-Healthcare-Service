@@ -159,11 +159,6 @@ const getAllFromDB = async (params: any, options: IPaginationOptions) => {
     });
   }
 
-  // andConditions.push({
-  //   isDeleted: false,
-  // });
-  // console.dir(andConditions, { depth: "infinity" });
-
   const whereConditions: Prisma.UserWhereInput =
     andConditions.length > 0 ? { AND: andConditions } : {};
 
@@ -237,10 +232,63 @@ const changeProfileStatus = async (
   return updateUserStatus;
 };
 
+const getMyProfile = async (user:any) => {
+  // console.log(user);
+
+  const userInfo = await prisma.user.findUnique({
+    where: {
+      email: user.email,
+    },
+    select: {
+      id: true,
+      email: true,
+      role: true,
+      needPasswordChange: true,
+      status:true
+    },
+  });
+
+  if (!userInfo) {
+    throw new ApiError(status.NOT_FOUND, "User Not Found");
+  }
+
+  // console.log(userInfo);
+
+  let profileInfo;
+  if (userInfo?.role === UserRole.SUPER_ADMIN) {
+    profileInfo = await prisma.admin.findUnique({
+      where: {
+        email: userInfo.email,
+      },
+    });
+  } else if (userInfo?.role === UserRole.ADMIN) {
+    profileInfo = await prisma.admin.findUnique({
+      where: {
+        email: userInfo.email,
+      },
+    });
+  } else if (userInfo?.role === UserRole.DOCTOR) {
+    profileInfo = await prisma.doctor.findUnique({
+      where: {
+        email: userInfo.email,
+      },
+    });
+  } else if (userInfo?.role === UserRole.PATIENT) {
+    profileInfo = await prisma.patient.findUnique({
+      where: {
+        email: userInfo.email,
+      },
+    });
+  }
+
+  return { ...userInfo, ...profileInfo };
+};
+
 export const userService = {
   createAdmin,
   createDoctor,
   createPatient,
   getAllFromDB,
   changeProfileStatus,
+  getMyProfile,
 };

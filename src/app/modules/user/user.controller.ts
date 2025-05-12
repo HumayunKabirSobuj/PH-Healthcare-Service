@@ -90,25 +90,37 @@ const getAllFromDB = catchAsync(async (req, res) => {
 });
 
 const changeProfileStatus = catchAsync(async (req: Request, res: Response) => {
-
   const { id } = req.params;
-  const result = await userService.changeProfileStatus(id, req.body)
-
-  console.log(req.body);
-  console.log(req.params);
+  const result = await userService.changeProfileStatus(id, req.body);
 
   sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "Users profile status changed!",
+    data: result,
+  });
+});
+
+const getMyProfile = catchAsync(
+  async (req: Request & { user?: any }, res: Response) => {
+    // console.log(req.user);
+    const user = req.user;
+    const result = await userService.getMyProfile(user);
+
+    sendResponse(res, {
       statusCode: status.OK,
       success: true,
-      message: "Users profile status changed!",
-      data: result
-  })
-});
+      message: "My profile data fetched!",
+      data: result,
+    });
+  }
+);
 
 export const userController = {
   createAdmin,
   createDoctor,
   createPatient,
   getAllFromDB,
-  changeProfileStatus
+  changeProfileStatus,
+  getMyProfile,
 };
